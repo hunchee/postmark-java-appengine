@@ -1,0 +1,163 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.postmark</groupId>
+	<artifactId>postmark-client</artifactId>
+	<packaging>jar</packaging>
+	<version>0.3.2</version>
+    
+	<properties>
+		<spring.version>3.0.5.RELEASE</spring.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<appengine.target.version>1.8.0</appengine.target.version>
+		<github.global.server>github</github.global.server>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>1.4</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.4</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>1.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.0.3</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<!-- Google App Engine (GAE) -->
+		<!-- Compile/runtime dependencies -->
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-api-1.0-sdk</artifactId>
+			<version>${appengine.target.version}</version>
+		</dependency>
+		<!--
+			GAE libraries for local testing as described here:
+			http://code.google.com/appengine/docs/java/howto/unittesting.html
+		-->
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-api-labs</artifactId>
+			<version>${appengine.target.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-api-stubs</artifactId>
+			<version>${appengine.target.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.appengine</groupId>
+			<artifactId>appengine-testing</artifactId>
+			<version>${appengine.target.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- End of GAE Dependencies -->				
+	</dependencies>
+    
+	<build>
+		<plugins>
+			<plugin>
+			    <artifactId>maven-deploy-plugin</artifactId>
+			    <version>2.7</version>
+			    <configuration>
+			        <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
+			    </configuration>
+			</plugin>	
+	        <plugin>
+	            <groupId>com.github.github</groupId>
+	            <artifactId>site-maven-plugin</artifactId>
+	            <version>0.9</version>
+	            <configuration>
+	                <message>Maven artifacts for ${project.version}</message>  <!-- git commit message -->
+	                <noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
+	                <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
+	                <branch>refs/heads/mvn-repo</branch>                       <!-- remote branch name -->
+	                <includes><include>**/*</include></includes>
+	                <repositoryName>postmark-java-appengine</repositoryName>      	<!-- github repo name -->
+	                <repositoryOwner>pastekit</repositoryOwner>    <!-- github username  -->
+	            </configuration>
+	            <executions>
+	              <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
+	              <execution>
+	                <goals>
+	                  <goal>site</goal>
+	                </goals>
+	                <phase>deploy</phase>
+	              </execution>
+	            </executions>
+	        </plugin>				    
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.2</version>
+				<executions>
+					<execution>
+						<id>attach-test</id>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+	</build>
+
+	<distributionManagement>
+	    <repository>
+	        <id>github</id>
+	        <name>GitHub ${project.artifactId} Repository</name>
+	        <url>https://raw.github.com/pastekit/${project.artifactId}/mvn-repo</url>
+	    </repository>
+	</distributionManagement>
+
+</project>
