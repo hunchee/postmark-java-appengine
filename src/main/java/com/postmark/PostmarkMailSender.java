@@ -31,20 +31,31 @@
 
 package com.postmark;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
+import org.esxx.js.protocol.GAEConnectionManager;
 import org.joda.time.DateTime;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailParseException;
@@ -106,14 +117,18 @@ public class PostmarkMailSender implements MailSender {
 	@Override
 	public void send(SimpleMailMessage message) throws MailException {
 
-        HttpClient httpClient = new DefaultHttpClient();
+//        HttpClient httpClient = new DefaultHttpClient();
+        HttpParams httpParams = new BasicHttpParams();
+        httpParams.setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 10000); // GAE constraint 		
+        ClientConnectionManager connectionManager = new GAEConnectionManager();
+        HttpClient httpclient = new DefaultHttpClient(connectionManager, httpParams);
         PostmarkResponse theResponse = new PostmarkResponse();
 
         try {
 
             // Create post request to Postmark API endpoint
             HttpPost method = new HttpPost("http://api.postmarkapp.com/email");
-
+            
             // Add standard headers required by Postmark
             method.addHeader("Accept",			"application/json");
             method.addHeader("Content-Type",	"application/json; charset=utf-8");
@@ -129,10 +144,16 @@ public class PostmarkMailSender implements MailSender {
             payload.setContentEncoding(HTTP.UTF_8);
             method.setEntity(payload);
 
-            ResponseHandler<String> responseHandler = new BasicResponseHandler();
+            //ResponseHandler<String> responseHandler = new BasicResponseHandler();
             try {
-                String response = httpClient.execute(method, responseHandler);
-                logger.log(Level.FINER, "Message response: " + response);
+                //String response = httpClient.execute(method, responseHandler);
+            	HttpResponse httpResponse = httpclient.execute(method);
+            	HttpEntity entity = httpResponse.getEntity();
+            	InputStream input = entity.getContent(); 
+            	BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+            	String response = reader.readLine();
+            	
+            	logger.log(Level.FINER, "Message response: " + response);
                 theResponse = gson.fromJson(response, PostmarkResponse.class);
                 theResponse.status = PostmarkResponseStatus.SUCCESS;
             } catch (HttpResponseException hre) {
@@ -161,7 +182,7 @@ public class PostmarkMailSender implements MailSender {
             throw new MailSendException("There has been an error sending email", e);
         
         } finally {
-            httpClient.getConnectionManager().shutdown();
+//            httpClient.getConnectionManager().shutdown();
         }
 
 		
