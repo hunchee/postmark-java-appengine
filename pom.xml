@@ -4,12 +4,12 @@
 	<groupId>com.postmark</groupId>
 	<artifactId>postmark-client</artifactId>
 	<packaging>jar</packaging>
-	<version>0.3.2</version>
+	<version>0.3.3</version>
     
 	<properties>
 		<spring.version>3.0.5.RELEASE</spring.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<appengine.target.version>1.8.0</appengine.target.version>
+		<appengine.target.version>1.9.18</appengine.target.version>
 		<github.global.server>github</github.global.server>
 	</properties>
 
