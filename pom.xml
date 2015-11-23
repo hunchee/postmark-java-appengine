@@ -1,16 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.postmark</groupId>
+	<groupId>com.hunchee</groupId>
 	<artifactId>postmark-client</artifactId>
 	<packaging>jar</packaging>
-	<version>0.3.3</version>
+	<version>0.3.3-SNAPSHOT</version>
     
 	<properties>
 		<spring.version>3.0.5.RELEASE</spring.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<appengine.target.version>1.9.18</appengine.target.version>
-		<github.global.server>github</github.global.server>
 	</properties>
 
 	<dependencies>
@@ -78,36 +77,13 @@
     
 	<build>
 		<plugins>
-			<plugin>
+			<!--plugin>
 			    <artifactId>maven-deploy-plugin</artifactId>
 			    <version>2.7</version>
 			    <configuration>
 			        <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
 			    </configuration>
-			</plugin>	
-	        <plugin>
-	            <groupId>com.github.github</groupId>
-	            <artifactId>site-maven-plugin</artifactId>
-	            <version>0.9</version>
-	            <configuration>
-	                <message>Maven artifacts for ${project.version}</message>  <!-- git commit message -->
-	                <noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
-	                <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
-	                <branch>refs/heads/mvn-repo</branch>                       <!-- remote branch name -->
-	                <includes><include>**/*</include></includes>
-	                <repositoryName>postmark-java-appengine</repositoryName>      	<!-- github repo name -->
-	                <repositoryOwner>hunchee</repositoryOwner>    <!-- github username  -->
-	            </configuration>
-	            <executions>
-	              <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
-	              <execution>
-	                <goals>
-	                  <goal>site</goal>
-	                </goals>
-	                <phase>deploy</phase>
-	              </execution>
-	            </executions>
-	        </plugin>				    
+			</plugin-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -149,15 +125,12 @@
 				</executions>
 			</plugin>
 		</plugins>
-
 	</build>
-
 	<distributionManagement>
 		<snapshotRepository>
-			<id>bintray-hunchee-maven-twist</id>
+			<id>bintray-hunchee-maven</id>
 			<name>oss-jfrog-artifactory-snapshots</name>
 			<url>http://oss.jfrog.org/artifactory/oss-snapshot-local</url>
 		</snapshotRepository>
 	</distributionManagement>
-
 </project>
